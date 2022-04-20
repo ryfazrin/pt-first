@@ -68,10 +68,10 @@
     function gtmPush() {
       const data = { event: 'button-click', from: 'partytown' };
       console.log(`GTM dataLayer.push(${JSON.stringify(data)})`);
-      let test = dataLayer.push({ event: 'button-click', from: 'partytown' });
+      dataLayer.push({ event: 'button-click', from: 'partytown' });
 
       const testDataLayer = document.getElementById('testDataLayer');
-      testDataLayer.textContent = data;
+      testDataLayer.textContent = 'push';
     }
   </script>
   <button id="buttonDataLayerPush" onclick="gtmPush()">Partytown dataLayer.push()</button>
