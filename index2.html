@@ -10,18 +10,16 @@
     <script>
       partytown = {
         resolveUrl(url, location) {
-          if (
-            url.hostname.includes('google-analytics') ||
-            url.hostname.includes('www.googletagmanager.com')
-          ) {
-            const proxyUrl = new URL('https://cdn.builder.io/api/v1/proxy-api');
-            proxyUrl.searchParams.append('url', url);
-            return proxyUrl;
+          if (url.host === 'www.googletagmanager.com' && url.pathname.startsWith('/debug')) {
+            return `/your-proxy?forward=` + encodeURIComponent(url.href);
           }
-          
+
           return url;
         },
-        forward: ['dataLayer.push'],
+        forward: [
+          'dataLayer.push',
+          '__tag_assistant_forwarder',
+        ],
         logCalls: true,
         logGetters: true,
         logSetters: true,
@@ -113,6 +111,43 @@
 
         const testDataLayer = document.getElementById('testDataLayer');
         testDataLayer.textContent = 'pushed';
+      }
+
+      const debug = true;
+      const gtmDebugLog = (msg, data) => {
+        if (debug) {
+          console.debug(
+            `%cGTM Main%c${msg}`,
+            `background: #c47ed1; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;margin-right:5px`,
+            `background: #999999; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;`,
+            data && data.length ? Array.from(data) : data
+          )
+        }
+      }
+
+      __partytown_gtm_debug = {
+        // Used to populate dataLayer back into main thread
+        dataLayerPush: function() {
+          [].push.apply(dataLayer, arguments)
+        },
+        // Called when receiver has been set inside partytown, calls __TAG_ASSISTANT_API.setReceiver
+        activate: function () {
+          gtmDebugLog('activate')
+          window.__TAG_ASSISTANT_API.setReceiver(function() {
+            gtmDebugLog('send data', arguments)
+            window.__tag_assistant_forwarder.apply(null, arguments);
+          })
+        },
+        // Forwards calls from bootstrap
+        sendMessage: function() {
+          gtmDebugLog('send message', arguments)
+          window.__TAG_ASSISTANT_API.sendMessage.apply(window.__TAG_ASSISTANT_API, arguments)
+        },
+        // Forwards calls from bootstrap
+        disconnect: function() {
+          gtmDebugLog('disconnect', arguments)
+          window.__TAG_ASSISTANT_API.disconnect.apply(window.__TAG_ASSISTANT_API, arguments)
+        },
       }
     </script>
     <button id="buttonDataLayerPush" onclick="gtmPush()">Partytown dataLayer.push()</button>
