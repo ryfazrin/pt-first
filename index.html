@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Partytown Test Page" />
 
-    <title>Standard Google Tag Manager (GTM)</title>
+    <title>Standard GTM & fb pixel</title>
 
     <!-- Google Tag Manager -->
     <script>
@@ -81,6 +81,15 @@
         const data = { event: 'button-click', some: { data: true } };
         console.log('dataLayer.push()');
         dataLayer.push(data);
+      }
+    </script>
+
+    <h1>Standard Facebook Pixel</h1>
+
+    <button onclick="sendEvent()">fbq('track', 'PageView')</button>
+    <script>
+      function sendEvent() {
+        fbq('track', 'PageView');
       }
     </script>
 
