@@ -112,10 +112,10 @@
       <span id="testFbq"></span>
     </p>
 
-    <button onclick="sendEvent()" id="buttonSendEvent">fbq('track', 'PageView')</button>
+    <button onclick="sendEvent()" id="buttonSendEvent">fbq('trackCustom', 'ShareDiscount', {promotion: 'share_discount_10%'})</button>
     <script>
       function sendEvent() {
-        fbq('track', 'PageView');
+        fbq('trackCustom', 'ShareDiscount', {promotion: 'share_discount_10%'});
         document.getElementById('testFbq').textContent = 'called';
       }
     </script>
